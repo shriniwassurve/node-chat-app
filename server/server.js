@@ -19,8 +19,13 @@ io.on('connection', (socket) => {
 
 
   socket.on('join', (params, callback) => {
+
+    if (users.getUserList(params.room).includes(params.name)) {
+      return callback('This user already exists');
+    }
+
     if (!isRealString(params.name) || !isRealString(params.room)) {
-      callback('Name and room name are required');
+      return callback('Name and room name are required');
     }
 
     socket.join(params.room);
@@ -47,7 +52,7 @@ io.on('connection', (socket) => {
     var user = users.getUser(socket.id);
 
     if (user) {
-      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));      
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
     }
   });
 
